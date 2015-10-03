@@ -57,6 +57,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     private static final int MENU = 1;
     private static final int GROUP = 1;
 
+    MapFragment mapFragment;
+
     GeneralHelper utilities;
     DatabaseHelper myDB;
 
@@ -73,14 +75,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         myDB = new DatabaseHelper(this);
         utilities = new GeneralHelper();
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.googleMap);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.googleMap);
 
         mapFragment.getMapAsync(this);
 
-        if(utilities.isExternalStorageReadable() && utilities.isExternalStorageWritable())
-            Toast.makeText(this, "Can do stuff", Toast.LENGTH_LONG).show();
-        else
-            Toast.makeText(this, "Can't do stuff", Toast.LENGTH_LONG).show();
+//        if(utilities.isExternalStorageReadable() && utilities.isExternalStorageWritable())
+//            Toast.makeText(this, "Can do stuff", Toast.LENGTH_LONG).show();
+//        else
+//            Toast.makeText(this, "Can't do stuff", Toast.LENGTH_LONG).show();
 
         pictureDirectory = getMyPicDirectory();
     }
@@ -99,21 +101,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
-    }
-
-    private List<File> getListFiles(File parentDir) {
-        ArrayList<File> inFiles = new ArrayList<File>();
-        File[] files = parentDir.listFiles();
-        for (File file : files) {
-            if (file.isDirectory()) {
-                inFiles.addAll(getListFiles(file));
-            } else {
-                if(file.getName().endsWith(".csv")){
-                    inFiles.add(file);
-                }
-            }
-        }
-        return inFiles;
     }
 
     @Override
@@ -151,6 +138,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
                 ArrayList<String> exif = utilities.getExifInfo(filename);
                 myDB.addPicture(resultName, filename, exif.get(0));
+
+//                mapFragment.getMap().clear();
+//                onMapReady(mapFragment.getMap());
+                findImagesWithGeoTagAndAddToGmap(mapFragment.getMap());
             }
             if(resultCode == RESULT_CANCELED)
             {
@@ -190,28 +181,19 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         super.onResume();
 
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
-        if(status == ConnectionResult.SUCCESS)
-        {
-            Toast.makeText(this, "Google Play is available", Toast.LENGTH_LONG).show();
-        }
-        else
-        {
-            Toast.makeText(this, "Google Play is not available", Toast.LENGTH_LONG).show();
-        }
+//        if(status == ConnectionResult.SUCCESS)
+//        {
+//            Toast.makeText(this, "Google Play is available", Toast.LENGTH_LONG).show();
+//        }
+//        else
+//        {
+//            Toast.makeText(this, "Google Play is not available", Toast.LENGTH_LONG).show();
+//        }
 
         String filename = loadLastAttemptedImageCaptureFilename();
 
         utilities.setPictureToSize(filename, ivLastPic);
         showExifInfo(filename);
-    }
-
-    private void setPictureToPopUpSize(String filename, ImageView iv) {
-        ArrayList<String> exif = utilities.getExifInfo(filename);
-
-        utilities.adjustPicOrientation(exif.get(0), iv);
-
-        Bitmap bitmap = utilities.resizePicture(filename, 200, 150);
-        iv.setImageBitmap(bitmap);
     }
 
     private File getMyPicDirectory()
@@ -275,21 +257,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         File pictureDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
         pictureDir = new File(pictureDir, "BrickCamera" + File.separator + marker.getTitle());
 
-//        if(pop_up.getVisibility() == View.INVISIBLE)
-//        {
-//            TextView title = (TextView) pop_up.getChildAt(0);
-//            ImageView image = (ImageView) pop_up.getChildAt(1);
-//
-//            title.setText(marker.getTitle());
-//            setPictureToPopUpSize(pictureDir.getPath(), image);
-//
-//            pop_up.setVisibility(View.VISIBLE);
-//        }
-//        else
-//        {
-//            pop_up.setVisibility(View.INVISIBLE);
-//        }
-
         Intent pictureIntent = new Intent(MainActivity.this, PictureActivity.class);
         pictureIntent.putExtra("pictureDir", pictureDir.getPath());
         startActivity(pictureIntent);
@@ -334,6 +301,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
             if(pictureDir.exists())
             {
+                googleMap.clear();
                 Log.d("GMAP", "Folder Found");
                 File[] files = pictureDir.listFiles();
                 for(File file : files)
@@ -345,6 +313,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
                         if(pos != null)
                         {
+//                            googleMap.clear();
                             Log.d("GMAP", "Image with gtag: " + file.getName());
                             addGeoTag(pos, file.getName(), googleMap);
                         }

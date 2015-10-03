@@ -7,6 +7,7 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -114,5 +115,20 @@ public class GeneralHelper {
                 iv.setRotation(270);
                 break;
         }
+    }
+
+    private List<File> getListFiles(File parentDir) {
+        ArrayList<File> inFiles = new ArrayList<File>();
+        File[] files = parentDir.listFiles();
+        for (File file : files) {
+            if (file.isDirectory()) {
+                inFiles.addAll(getListFiles(file));
+            } else {
+                if(file.getName().endsWith(".csv")){
+                    inFiles.add(file);
+                }
+            }
+        }
+        return inFiles;
     }
 }

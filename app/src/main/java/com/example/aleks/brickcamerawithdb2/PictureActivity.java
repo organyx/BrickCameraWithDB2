@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +21,8 @@ public class PictureActivity extends AppCompatActivity {
     EditText etComment;
 
     DatabaseHelper myDB;
+    GeneralHelper utilities;
+    private String name;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +30,7 @@ public class PictureActivity extends AppCompatActivity {
         setContentView(R.layout.activity_picture);
 
         myDB = new DatabaseHelper(this);
+        utilities = new GeneralHelper();
 
         ivPicture = (ImageView) findViewById(R.id.ivSelectedPicture);
         tvComment = (TextView) findViewById(R.id.tvComments);
@@ -35,14 +39,17 @@ public class PictureActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String  picturePath = intent.getStringExtra("pictureDir");
         String pictureName = picturePath.substring(picturePath.lastIndexOf("/") + 1);
-
+        name = pictureName;
         Log.d("onCreate", "picture name: " + pictureName);
 
         ContentValues values = myDB.getOrientation(pictureName);
 
+        setPicture(picturePath, ivPicture);
 //        values.size();
-        Toast.makeText(this, "Returned: " + values.getAsString("Orientation"), Toast.LENGTH_LONG).show();
+//        Toast.makeText(this, "Returned: " + values.getAsString("Orientation"), Toast.LENGTH_LONG).show();
 //        tvComment.setText(values.size());
+
+        showComment();
     }
 
     @Override
@@ -65,5 +72,26 @@ public class PictureActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void setPicture(String filepath, ImageView iv)
+    {
+        utilities.setPictureToSize(filepath, iv);
+    }
+
+    private void showComment()
+    {
+        ContentValues values = myDB.getComment(name);
+        if(values != null)
+        {
+            tvComment.setText(values.getAsString("Comment"));
+        }
+    }
+
+    public void onBtnApplyClick(View view) {
+        String comment = etComment.getText().toString();
+        etComment.setText("");
+        myDB.updateComment(name, comment);
+        showComment();
     }
 }
