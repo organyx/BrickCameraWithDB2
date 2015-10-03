@@ -51,9 +51,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
     private File pictureDirectory;
 
-    private LinearLayout pop_up;
-    private ImageView pop_up_image;
-
     private GoogleMap gmap;
     private Button btnDoc;
 
@@ -75,13 +72,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
         myDB = new DatabaseHelper(this);
         utilities = new GeneralHelper();
-
-        pop_up = (LinearLayout) findViewById(R.id.pop_up_layout);
-        pop_up_image = (ImageView) findViewById(R.id.pop_up_image);
-        if(pop_up.getVisibility() == View.VISIBLE)
-        {
-            pop_up.setVisibility(View.INVISIBLE);
-        }
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.googleMap);
 
@@ -199,11 +189,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     {
         super.onResume();
 
-        if(pop_up.getVisibility() == View.VISIBLE)
-        {
-            pop_up.setVisibility(View.INVISIBLE);
-        }
-
         int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
         if(status == ConnectionResult.SUCCESS)
         {
@@ -220,20 +205,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         showExifInfo(filename);
     }
 
-
-    @Override
-    protected void onStop()
-    {
-        super.onStop();
-        pop_up.setVisibility(View.VISIBLE);
-    }
-
-
-
-
-
-
-
     private void setPictureToPopUpSize(String filename, ImageView iv) {
         ArrayList<String> exif = utilities.getExifInfo(filename);
 
@@ -242,10 +213,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         Bitmap bitmap = utilities.resizePicture(filename, 200, 150);
         iv.setImageBitmap(bitmap);
     }
-
-
-
-
 
     private File getMyPicDirectory()
     {
@@ -384,13 +351,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
                     }
                 }
             }
-        }
-    }
-
-    public void onPopUpClick(View view) {
-        if(pop_up.getVisibility() == View.VISIBLE)
-        {
-            pop_up.setVisibility(View.INVISIBLE);
         }
     }
 }

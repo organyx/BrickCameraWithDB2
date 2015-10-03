@@ -69,28 +69,6 @@
         android:layout_width="match_parent"
         android:layout_height="200dp"
         android:layout_above="@+id/bottom"/>
-    <LinearLayout
-        android:id="@+id/pop_up_layout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:layout_above="@+id/bottom"
-        android:paddingBottom="30dp"
-        android:background="@drawable/thin_border"
-        android:layout_centerHorizontal="true"
-
-        android:onClick="onPopUpClick">
-        <TextView
-            android:id="@+id/pop_up_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            style="@style/Text_Style"/>
-        <ImageView
-            android:id="@+id/pop_up_image"
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            />
-    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/bottom"
