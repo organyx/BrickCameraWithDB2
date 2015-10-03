@@ -10,4 +10,7 @@
     <string name="take_picture">Take Picture</string>
     <string name="record_video">Record Video</string>
     <string name="title_activity_picture">PictureActivity</string>
+    <string name="selected_picture">Picture selected from the map.</string>
+    <string name="apply">Apply</string>
+    <string name="picture_taken">Main Picture.</string>
 </resources>

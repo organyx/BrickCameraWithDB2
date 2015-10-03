@@ -2,9 +2,9 @@ package com.example.aleks.brickcamerawithdb2;
 
 import android.content.ContentValues;
 import android.content.Intent;
-import android.net.Uri;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,7 +12,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class PictureActivity extends AppCompatActivity {
 
@@ -35,6 +34,8 @@ public class PictureActivity extends AppCompatActivity {
         ivPicture = (ImageView) findViewById(R.id.ivSelectedPicture);
         tvComment = (TextView) findViewById(R.id.tvComments);
         etComment = (EditText) findViewById(R.id.etPictureComments);
+
+        tvComment.setMovementMethod(new ScrollingMovementMethod());
 
         Intent intent = getIntent();
         String  picturePath = intent.getStringExtra("pictureDir");

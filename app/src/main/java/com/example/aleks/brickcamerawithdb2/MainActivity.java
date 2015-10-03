@@ -2,26 +2,19 @@ package com.example.aleks.brickcamerawithdb2;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -35,10 +28,9 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
-public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback, View.OnClickListener{
+public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarkerClickListener, OnMapReadyCallback, View.OnClickListener {
 
     private ImageView ivLastPic;
     private TextView tvOrientation;
@@ -51,11 +43,11 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
     private File pictureDirectory;
 
-    private GoogleMap gmap;
-    private Button btnDoc;
-
-    private static final int MENU = 1;
-    private static final int GROUP = 1;
+//    private GoogleMap gmap;
+//    private Button btnDoc;
+//
+//    private static final int MENU = 1;
+//    private static final int GROUP = 1;
 
     MapFragment mapFragment;
 
@@ -119,14 +111,11 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if(requestCode == PICTURE_REQUEST_CODE)
-        {
-            if(resultCode == RESULT_OK)
-            {
+        if (requestCode == PICTURE_REQUEST_CODE) {
+            if (resultCode == RESULT_OK) {
                 Log.d("onActivityResult", "RESULT_OK");
                 String filename = loadLastAttemptedImageCaptureFilename();
 
@@ -143,8 +132,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 //                onMapReady(mapFragment.getMap());
                 findImagesWithGeoTagAndAddToGmap(mapFragment.getMap());
             }
-            if(resultCode == RESULT_CANCELED)
-            {
+            if (resultCode == RESULT_CANCELED) {
                 Log.d("onActivityResult", "RESULT_CANCELED");
 //                if (data == null)
 //                    setPictureToSize(picturePrevPath, ivLastPic);
@@ -152,8 +140,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         }
     }
 
-    private void showExifInfo(String filename)
-    {
+    private void showExifInfo(String filename) {
         ArrayList<String> exif = utilities.getExifInfo(filename);
         tvOrientation.setText(exif.get(0));
         tvLong.setText(exif.get(1) + " " + exif.get(2));
@@ -176,11 +163,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     }
 
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
 
-        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
+//        int status = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this);
 //        if(status == ConnectionResult.SUCCESS)
 //        {
 //            Toast.makeText(this, "Google Play is available", Toast.LENGTH_LONG).show();
@@ -196,8 +182,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         showExifInfo(filename);
     }
 
-    private File getMyPicDirectory()
-    {
+    private File getMyPicDirectory() {
         File mediaStorageDir = new File(Environment.getExternalStoragePublicDirectory(
                 Environment.DIRECTORY_PICTURES), "BrickCamera");
         // This location works best if you want the created images to be shared
@@ -210,10 +195,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
             return null;
     }
 
-    private boolean checkMyPicDirectory(File filename)
-    {
-        if (! filename.exists()){
-            if (! filename.mkdirs()){
+    private boolean checkMyPicDirectory(File filename) {
+        if (!filename.exists()) {
+            if (!filename.mkdirs()) {
                 Log.d("MyCameraApp", "failed to create directory");
                 return false;
             }
@@ -223,7 +207,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
     public void onBtnTakePicClick(View view) {
         String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.ENGLISH).format(new Date());
-        String filename = pictureDirectory.getPath() + File.separator+"IMG_"+timeStamp+".jpg";
+        String filename = pictureDirectory.getPath() + File.separator + "IMG_" + timeStamp + ".jpg";
         File imageFile = new File(filename);
         Uri imageUri = Uri.fromFile(imageFile);
 
@@ -232,11 +216,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         takePicture(imageUri);
     }
 
-    public void takePicture(Uri filepath)
-    {
+    public void takePicture(Uri filepath) {
         Intent cameraIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         cameraIntent.putExtra(MediaStore.EXTRA_OUTPUT, filepath);
-        if(cameraIntent.resolveActivity(getPackageManager()) != null)
+        if (cameraIntent.resolveActivity(getPackageManager()) != null)
             startActivityForResult(cameraIntent, PICTURE_REQUEST_CODE);
     }
 
@@ -272,19 +255,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     private LatLng getLatLongFromExif(String absolutePath) {
         float latLong[] = new float[2];
         LatLng pos = null;
-        try{
+        try {
             ExifInterface exif = new ExifInterface(absolutePath);
-            if(exif.getLatLong(latLong))
-            {
+            if (exif.getLatLong(latLong)) {
                 pos = new LatLng(latLong[0], latLong[1]);
-            }
-            else
-            {
+            } else {
                 return null;
             }
-        }
-        catch (IOException e)
-        {
+        } catch (IOException e) {
             e.printStackTrace();
         }
         return pos;
@@ -293,26 +271,21 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     private void findImagesWithGeoTagAndAddToGmap(GoogleMap googleMap) {
         Log.d("GMAP", "findImagesWithGeoTagAndAddToGmap");
         String storageState = Environment.getExternalStorageState();
-        if(storageState.equals(Environment.MEDIA_MOUNTED))
-        {
+        if (storageState.equals(Environment.MEDIA_MOUNTED)) {
             Log.d("GMAP", "Media Mounted");
             File pictureDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             pictureDir = new File(pictureDir, "BrickCamera");
 
-            if(pictureDir.exists())
-            {
+            if (pictureDir.exists()) {
                 googleMap.clear();
                 Log.d("GMAP", "Folder Found");
                 File[] files = pictureDir.listFiles();
-                for(File file : files)
-                {
-                    if(file.getName().endsWith(".jpg"))
-                    {
+                for (File file : files) {
+                    if (file.getName().endsWith(".jpg")) {
                         Log.d("GMAP", "Found .jpgs");
                         LatLng pos = getLatLongFromExif(file.getAbsolutePath());
 
-                        if(pos != null)
-                        {
+                        if (pos != null) {
 //                            googleMap.clear();
                             Log.d("GMAP", "Image with gtag: " + file.getName());
                             addGeoTag(pos, file.getName(), googleMap);
