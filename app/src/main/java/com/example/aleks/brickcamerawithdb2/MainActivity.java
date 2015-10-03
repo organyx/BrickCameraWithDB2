@@ -60,6 +60,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     private static final int MENU = 1;
     private static final int GROUP = 1;
 
+    GeneralHelper utilities;
     DatabaseHelper myDB;
 
     @Override
@@ -73,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         tvLong = (TextView) findViewById(R.id.tvLongValue);
 
         myDB = new DatabaseHelper(this);
+        utilities = new GeneralHelper();
 
         pop_up = (LinearLayout) findViewById(R.id.pop_up_layout);
         pop_up_image = (ImageView) findViewById(R.id.pop_up_image);
@@ -85,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
         mapFragment.getMapAsync(this);
 
-        if(isExternalStorageReadable() && isExternalStorageWritable())
+        if(utilities.isExternalStorageReadable() && utilities.isExternalStorageWritable())
             Toast.makeText(this, "Can do stuff", Toast.LENGTH_LONG).show();
         else
             Toast.makeText(this, "Can't do stuff", Toast.LENGTH_LONG).show();
@@ -151,7 +153,14 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
                 Log.d("onActivityResult", "RESULT_OK");
                 String filename = loadLastAttemptedImageCaptureFilename();
 
-                setPictureToSize(filename, ivLastPic);
+                utilities.setPictureToSize(filename, ivLastPic);
+
+                showExifInfo(filename);
+
+                String resultName = filename.substring(filename.lastIndexOf("/") + 1);
+
+                ArrayList<String> exif = utilities.getExifInfo(filename);
+                myDB.addPicture(resultName, filename, exif.get(0));
             }
             if(resultCode == RESULT_CANCELED)
             {
@@ -162,9 +171,17 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         }
     }
 
+    private void showExifInfo(String filename)
+    {
+        ArrayList<String> exif = utilities.getExifInfo(filename);
+        tvOrientation.setText(exif.get(0));
+        tvLong.setText(exif.get(1) + " " + exif.get(2));
+        tvLat.setText(exif.get(3) + " " + exif.get(4));
+    }
+
     private String loadLastAttemptedImageCaptureFilename() {
         SharedPreferences prefs = getSharedPreferences(SAVED_PREFERENCES, MODE_PRIVATE);
-        String saved_path = prefs.getString(SAVED_PICTURE_PATH, pictureDirectory+File.separator+"IMG_20151003_162805.jpg");
+        String saved_path = prefs.getString(SAVED_PICTURE_PATH, pictureDirectory + File.separator + "IMG_20151003_162805.jpg");
         Log.d("FILE_PATH", "Loaded value: " + saved_path);
         return saved_path;
     }
@@ -199,7 +216,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
         String filename = loadLastAttemptedImageCaptureFilename();
 
-        setPictureToSize(filename, ivLastPic);
+        utilities.setPictureToSize(filename, ivLastPic);
+        showExifInfo(filename);
     }
 
 
@@ -210,109 +228,24 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         pop_up.setVisibility(View.VISIBLE);
     }
 
-    public boolean isExternalStorageWritable()
-    {
-        String state = Environment.getExternalStorageState();
-        if(Environment.MEDIA_MOUNTED.equals(state))
-            return true;
-        return false;
-    }
 
-    public boolean isExternalStorageReadable()
-    {
-        String state = Environment.getExternalStorageState();
-        if(Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state))
-            return true;
-        return false;
-    }
 
-    private void setPictureToSize(String filename, ImageView iv)
-    {
-        Log.d("setPictureToSize", "File: " + filename);
 
-        String orientation = getExifInfo(filename);
 
-//        Log.d("PICTURE", "FilePath: " + filename);
-        String result = filename.substring(filename.lastIndexOf("/") + 1);
-//        Log.d("PICTURE", "Filename: " + result);
 
-        myDB.addPicture(result, filename, orientation);
-
-        adjustPicOrientation(orientation, iv);
-
-        Bitmap bitmap = resizePicture(filename, 200, 150);
-
-        iv.setImageBitmap(bitmap);
-    }
-
-    private String getExifInfo(String filename) {
-        String orientation = null;
-        String latValue;
-        String latRef;
-        String longValue;
-        String longRef;
-
-        ExifInterface exif = null;
-        try {
-            exif = new ExifInterface(filename);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        if(exif.getAttribute(ExifInterface.TAG_ORIENTATION) != null)
-        {
-            orientation = exif.getAttribute(ExifInterface.TAG_ORIENTATION);
-            latValue = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE);
-            latRef = exif.getAttribute(ExifInterface.TAG_GPS_LATITUDE_REF);
-            longValue = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE);
-            longRef = exif.getAttribute(ExifInterface.TAG_GPS_LONGITUDE_REF);
-            tvOrientation.setText(orientation);
-            tvLat.setText(latValue + " " + latRef);
-            tvLong.setText(longValue + " " + longRef);
-        }
-        return orientation;
-    }
 
     private void setPictureToPopUpSize(String filename, ImageView iv) {
-        String orientation = getExifInfo(filename);
+        ArrayList<String> exif = utilities.getExifInfo(filename);
 
-        adjustPicOrientation(orientation, iv);
+        utilities.adjustPicOrientation(exif.get(0), iv);
 
-        Bitmap bitmap = resizePicture(filename, 200, 150);
+        Bitmap bitmap = utilities.resizePicture(filename, 200, 150);
         iv.setImageBitmap(bitmap);
     }
 
-    private Bitmap resizePicture(String filename, int width, int height) {
 
-        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-        bmOptions.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filename, bmOptions);
 
-        int photoW = bmOptions.outWidth;
-        int photoH = bmOptions.outHeight;
-        int scaleFactor = Math.min(photoW / width, photoH / height);
 
-        bmOptions.inJustDecodeBounds = false;
-        bmOptions.inSampleSize = scaleFactor;
-        return BitmapFactory.decodeFile(filename, bmOptions);
-    }
-
-    private void adjustPicOrientation(String orientation, ImageView iv) {
-        switch (orientation)
-        {
-            case "1":
-                iv.setRotation(360);
-                break;
-            case "3":
-                iv.setRotation(180);
-                break;
-            case "6":
-                iv.setRotation(90);
-                break;
-            case "8":
-                iv.setRotation(270);
-                break;
-        }
-    }
 
     private File getMyPicDirectory()
     {
