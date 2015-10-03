@@ -19,6 +19,7 @@ public class DatabaseHelper {
     private static final String COL_NAME = "Name";
     private static final String COL_FILEPATH = "FILEPATH";
     private static final String COL_COMMENT = "COMMENT";
+    private static final String COL_ORIENTATION = "COL_ORIENTATION";
 
     public DatabaseHelper(Context context) {
         _openHelper = new mySQLiteOpenHelper(context);
@@ -32,11 +33,18 @@ public class DatabaseHelper {
 
         @Override
         public void onCreate(SQLiteDatabase db) {
-            db.execSQL("create table " + TABLE_NAME + " ("+ COL_ID +" integer primary key autoincrement, "+ COL_NAME +" text, "+ COL_FILEPATH +" text, "+ COL_COMMENT+" text)");
+            db.execSQL("create table " + TABLE_NAME + " ("+
+                    COL_ID +" integer primary key autoincrement, "+
+                    COL_NAME +" text, "+
+                    COL_FILEPATH +" text, "+
+                    COL_COMMENT+" text, "+
+                    COL_ORIENTATION+" text)");
         }
 
         @Override
         public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+            db.execSQL("DROP TABLE IF EXISTS " + TABLE_NAME);
+            onCreate(db);
         }
     }
 
@@ -79,7 +87,22 @@ public class DatabaseHelper {
         return row;
     }
 
-    public long add(String name, String filepath) {
+    public ContentValues getOrientation(String name) {
+        SQLiteDatabase db = _openHelper.getReadableDatabase();
+        if (db == null) {
+            return null;
+        }
+        ContentValues row = new ContentValues();
+        Cursor cur = db.rawQuery("select "+ COL_ORIENTATION +" from "+ TABLE_NAME +" where "+ COL_NAME +" = ?", new String[] { name });
+        if (cur.moveToNext()) {
+            row.put("Orientation", cur.getString(0));
+        }
+        cur.close();
+        db.close();
+        return row;
+    }
+
+    public long addPicture(String name, String filepath, String orientation) {
         SQLiteDatabase db = _openHelper.getWritableDatabase();
         if (db == null) {
             return 0;
@@ -87,6 +110,7 @@ public class DatabaseHelper {
         ContentValues row = new ContentValues();
         row.put(COL_NAME, name);
         row.put(COL_FILEPATH, filepath);
+        row.put(COL_ORIENTATION, orientation);
         long id = db.insert(TABLE_NAME, null, row);
         db.close();
         return id;
@@ -101,7 +125,7 @@ public class DatabaseHelper {
         db.close();
     }
 
-    public void update(String name, String comment) {
+    public void updateComment(String name, String comment) {
         SQLiteDatabase db = _openHelper.getWritableDatabase();
         if (db == null) {
             return;

@@ -60,6 +60,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     private static final int MENU = 1;
     private static final int GROUP = 1;
 
+    DatabaseHelper myDB;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +71,8 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         tvOrientation = (TextView) findViewById(R.id.tvOrientationValue);
         tvLat = (TextView) findViewById(R.id.tvLatValue);
         tvLong = (TextView) findViewById(R.id.tvLongValue);
+
+        myDB = new DatabaseHelper(this);
 
         pop_up = (LinearLayout) findViewById(R.id.pop_up_layout);
         pop_up_image = (ImageView) findViewById(R.id.pop_up_image);
@@ -160,7 +164,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
     private String loadLastAttemptedImageCaptureFilename() {
         SharedPreferences prefs = getSharedPreferences(SAVED_PREFERENCES, MODE_PRIVATE);
-        String saved_path = prefs.getString(SAVED_PICTURE_PATH, "DEFAULT PATH");
+        String saved_path = prefs.getString(SAVED_PICTURE_PATH, pictureDirectory+File.separator+"IMG_20151003_162805.jpg");
         Log.d("FILE_PATH", "Loaded value: " + saved_path);
         return saved_path;
     }
@@ -227,6 +231,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         Log.d("setPictureToSize", "File: " + filename);
 
         String orientation = getExifInfo(filename);
+
+//        Log.d("PICTURE", "FilePath: " + filename);
+        String result = filename.substring(filename.lastIndexOf("/") + 1);
+//        Log.d("PICTURE", "Filename: " + result);
+
+        myDB.addPicture(result, filename, orientation);
 
         adjustPicOrientation(orientation, iv);
 
@@ -380,9 +390,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 //            pop_up.setVisibility(View.INVISIBLE);
 //        }
 
-//        Intent pictureIntent = new Intent(PicActivity.this, PictureActivity.class);
-//        pictureIntent.putExtra("pictureDir", pictureDir.toString());
-//        startActivity(pictureIntent);
+        Intent pictureIntent = new Intent(MainActivity.this, PictureActivity.class);
+        pictureIntent.putExtra("pictureDir", pictureDir.getPath());
+        startActivity(pictureIntent);
         return true;
     }
 
