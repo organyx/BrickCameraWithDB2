@@ -38,6 +38,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class widget_class extends AppWidgetProvider {
 
     private static final String ACTION_UPDATE = "android.appwidget.action.APPWIDGET_UPDATE";
+    private static final String ACTION_BOOT_COMPLETE = "android.intent.action.BOOT_COMPLETED";
     private static final String ACTION_LAUNCH = "ACTION_LAUNCH";
 
     @Override
@@ -78,6 +79,11 @@ public class widget_class extends AppWidgetProvider {
         if (intent.getAction().equals(ACTION_UPDATE))
         {
             Log.d("RssWidget", "onReceive | Update action received");
+            new RetrieveRssFeed().execute(context);
+        }
+
+        if (intent.getAction().equals(ACTION_BOOT_COMPLETE))
+        {
             new RetrieveRssFeed().execute(context);
         }
     }
