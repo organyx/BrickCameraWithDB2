@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.provider.DocumentsContract;
 
+import android.util.Log;
 import android.widget.RemoteViews;
 
 import org.w3c.dom.Document;
@@ -36,34 +37,34 @@ import javax.xml.parsers.DocumentBuilderFactory;
  */
 public class widget_class extends AppWidgetProvider {
 
+    private static final String ACTION_UPDATE = "android.appwidget.action.APPWIDGET_UPDATE";
+    private static final String ACTION_LAUNCH = "ACTION_LAUNCH";
+
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds)
     {
+        Log.d("RssWidget", "onUpdate | Started");
         for (int i = 0; i<appWidgetIds.length; i++)
         {
             int currentWidgetId = appWidgetIds[i];
-
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 //            DateFormat df = new SimpleDateFormat("HH:mm:ss");
 //            String timetext = df.format(new Date());
 //            timetext = currentWidgetId+")\n" + timetext;
 
-            Intent myIntent = new Intent(context, widget_class.class);
-            myIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, currentWidgetId);
-            myIntent.setAction("update");
-
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
+            Intent update_intent = new Intent(context, widget_class.class);
+            update_intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, currentWidgetId);
+            update_intent.setAction(ACTION_UPDATE);
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, update_intent, PendingIntent.FLAG_UPDATE_CURRENT);
             views.setOnClickPendingIntent(R.id.btnUpdateFeed, pendingIntent);
 //            views.setTextViewText(R.id.update, timetext);
+            new RetrieveRssFeed().execute(context);
 
 
             Intent launcher_intent = new Intent(context, MainActivity.class);
+            launcher_intent.setAction(ACTION_LAUNCH);
             PendingIntent pending_launcher_intent = PendingIntent.getActivity(context, 0, launcher_intent, 0);
             views.setOnClickPendingIntent(R.id.btnLaunchApp, pending_launcher_intent);
-
-
-            new RetrieveRssFeed().execute(context);
 
             appWidgetManager.updateAppWidget(currentWidgetId, views);
         }
@@ -74,8 +75,9 @@ public class widget_class extends AppWidgetProvider {
     {
         super.onReceive(context, intent);
 
-        if (intent.getAction().equals("update"))
+        if (intent.getAction().equals(ACTION_UPDATE))
         {
+            Log.d("RssWidget", "onReceive | Update action received");
             new RetrieveRssFeed().execute(context);
         }
     }
@@ -88,6 +90,7 @@ public class widget_class extends AppWidgetProvider {
 
         @Override
         protected List<StackOverflowFeed> doInBackground(Context... params) {
+//            Log.d("RssWidget", "doInBackground | Started");
             try {
                 context = params[0];
 
@@ -104,6 +107,7 @@ public class widget_class extends AppWidgetProvider {
 
         protected void onPostExecute(List<StackOverflowFeed> feed)
         {
+//            Log.d("RssWidget", "onPostExecute | Started");
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             remoteViews = new RemoteViews(context.getPackageName(), R.layout.widget_layout);
 
@@ -118,15 +122,32 @@ public class widget_class extends AppWidgetProvider {
             else if(feed != null && feed.size() >= 5)
             {
                 remoteViews.setTextViewText(R.id.tvFeed1, "1. " + feed.get(0).title);
+                remoteViews.setOnClickPendingIntent(R.id.tvFeed1, setPendingIntent(feed.get(0).link));
                 remoteViews.setTextViewText(R.id.tvFeed2, "2. " + feed.get(1).title);
+                remoteViews.setOnClickPendingIntent(R.id.tvFeed2, setPendingIntent(feed.get(1).link));
                 remoteViews.setTextViewText(R.id.tvFeed3, "3. " + feed.get(2).title);
+                remoteViews.setOnClickPendingIntent(R.id.tvFeed3, setPendingIntent(feed.get(2).link));
                 remoteViews.setTextViewText(R.id.tvFeed4, "4. " + feed.get(3).title);
+                remoteViews.setOnClickPendingIntent(R.id.tvFeed4, setPendingIntent(feed.get(3).link));
                 remoteViews.setTextViewText(R.id.tvFeed5, "5. " + feed.get(4).title);
+                remoteViews.setOnClickPendingIntent(R.id.tvFeed5, setPendingIntent(feed.get(4).link));
             }
 
             appWidgetManager.updateAppWidget(new ComponentName(context, widget_class.class), remoteViews);
         }
+
+        private PendingIntent setPendingIntent(String link)
+        {
+            Uri webPage = Uri.parse(link);
+            Intent intent = new Intent(Intent.ACTION_VIEW, webPage);
+
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+
+            return pendingIntent;
+        }
     }
+
+
 
     public class FeedParser
     {

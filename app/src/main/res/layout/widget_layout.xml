@@ -5,7 +5,7 @@
     android:background="@drawable/borders">
     <TextView
         android:id="@+id/tvFeed1"
-        style="@android:style/TextAppearance.Medium"
+        style="@android:style/TextAppearance.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -14,7 +14,7 @@
         android:text="--:--"/>
     <TextView
         android:id="@+id/tvFeed2"
-        style="@android:style/TextAppearance.Medium"
+        style="@android:style/TextAppearance.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -23,7 +23,7 @@
         android:text="--:--"/>
     <TextView
         android:id="@+id/tvFeed3"
-        style="@android:style/TextAppearance.Medium"
+        style="@android:style/TextAppearance.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -32,7 +32,7 @@
         android:text="--:--"/>
     <TextView
         android:id="@+id/tvFeed4"
-        style="@android:style/TextAppearance.Medium"
+        style="@android:style/TextAppearance.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -41,7 +41,7 @@
         android:text="--:--"/>
     <TextView
         android:id="@+id/tvFeed5"
-        style="@android:style/TextAppearance.Medium"
+        style="@android:style/TextAppearance.Small"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -51,7 +51,9 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:layout_gravity="center"
+        android:gravity="center">
         <Button
             android:id="@+id/btnUpdateFeed"
             android:layout_width="wrap_content"
