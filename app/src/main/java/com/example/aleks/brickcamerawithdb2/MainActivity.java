@@ -103,8 +103,9 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if (id == R.id.action_currency_converter) {
+            Intent converterIntent = new Intent(MainActivity.this, CurrencyConverterActivity.class);
+            startActivity(converterIntent);
         }
 
         return super.onOptionsItemSelected(item);
