@@ -34,23 +34,33 @@ public class GeneralHelper {
         return false;
     }
 
-    public void setPictureToSize(String filename, ImageView iv)
+    public boolean setPictureToSize(String filename, ImageView iv)
     {
-        Log.d("setPictureToSize", "File: " + filename);
+        if(filename.equals("default"))
+        {
 
-        ArrayList<String> exif = getExifInfo(filename);
+            return false;
+        }
+        else
+        {
+            Log.d("setPictureToSize", "File: " + filename);
+
+            ArrayList<String> exif = getExifInfo(filename);
 
 //        Log.d("PICTURE", "FilePath: " + filename);
-        String result = filename.substring(filename.lastIndexOf("/") + 1);
+            String result = filename.substring(filename.lastIndexOf("/") + 1);
 //        Log.d("PICTURE", "Filename: " + result);
 
 //        myDB.addPicture(result, filename, orientation);
 
-        adjustPicOrientation(exif.get(0), iv);
+            adjustPicOrientation(exif.get(0), iv);
 
-        Bitmap bitmap = resizePicture(filename, 200, 150);
+            Bitmap bitmap = resizePicture(filename, 200, 150);
 
-        iv.setImageBitmap(bitmap);
+            iv.setImageBitmap(bitmap);
+            return true;
+        }
+
     }
 
     public ArrayList<String> getExifInfo(String filename) {
@@ -130,5 +140,10 @@ public class GeneralHelper {
             }
         }
         return inFiles;
+    }
+
+    public String filenameFromPath(String path)
+    {
+        return  path.substring(path.lastIndexOf("/") + 1);
     }
 }

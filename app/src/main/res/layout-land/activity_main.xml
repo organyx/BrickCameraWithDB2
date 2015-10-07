@@ -108,5 +108,11 @@
             android:layout_height="wrap_content"
             android:onClick="onBtnTakePicClick"
             android:text="@string/take_picture" />
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onBtnRefreshClick"
+            android:text="Refresh" />
     </LinearLayout>
 </RelativeLayout>

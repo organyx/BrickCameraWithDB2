@@ -2,6 +2,8 @@ package com.example.aleks.brickcamerawithdb2;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -43,16 +46,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
     private File pictureDirectory;
 
-//    private GoogleMap gmap;
-//    private Button btnDoc;
-//
-//    private static final int MENU = 1;
-//    private static final int GROUP = 1;
-
     MapFragment mapFragment;
 
     GeneralHelper utilities;
     DatabaseHelper myDB;
+
+    Bitmap defaultPic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,6 +65,10 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
         myDB = new DatabaseHelper(this);
         utilities = new GeneralHelper();
+
+        defaultPic = BitmapFactory.decodeResource(getResources(), R.drawable.placeholder);
+
+
 
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.googleMap);
 
@@ -82,14 +85,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-
-//        List<File> files = getListFiles(pictureDirectory);
-//
-//        for (int i = 0; i < files.size(); i++)
-//        {
-//            menu.add(GROUP, MENU, i, i);
-//            Log.d("OptionsMenu", "Item: " + i);
-//        }
 
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
@@ -129,16 +124,44 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
                 ArrayList<String> exif = utilities.getExifInfo(filename);
                 myDB.addPicture(resultName, filename, exif.get(0));
 
-//                mapFragment.getMap().clear();
-//                onMapReady(mapFragment.getMap());
+                mapFragment.getMap().clear();
                 findImagesWithGeoTagAndAddToGmap(mapFragment.getMap());
             }
             if (resultCode == RESULT_CANCELED) {
                 Log.d("onActivityResult", "RESULT_CANCELED");
-//                if (data == null)
-//                    setPictureToSize(picturePrevPath, ivLastPic);
+                if(myDB.getLastRow() == null)
+                {
+                    ivLastPic.setImageBitmap(defaultPic);
+                }
+                else
+                {
+                    String lastPic = myDB.getLastRow().getAsString("Filepath");
+                    Log.d("LasPic", lastPic);
+                    utilities.setPictureToSize(lastPic, ivLastPic);
+                }
             }
+//            else
+//            {
+//                Log.d("onActivityResult", "ELSE");
+//                if(myDB.getLastRow() == null)
+//                {
+//                    ivLastPic.setImageBitmap(defaultPic);
+//                }
+//                else
+//                {
+//                    String lastPic = myDB.getLastRow().getAsString("Filepath");
+//                    Log.d("LasPic", lastPic);
+//                    utilities.setPictureToSize(lastPic, ivLastPic);
+//                }
+//            }
         }
+//        else
+//        {
+//            Log.d("onActivityResult", "ELSE");
+//            String lastPic = myDB.getLastRow().getAsString("Filepath");
+//            Log.d("LasPic", lastPic);
+//            utilities.setPictureToSize(lastPic, ivLastPic);
+//        }
     }
 
     private void showExifInfo(String filename) {
@@ -150,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
     private String loadLastAttemptedImageCaptureFilename() {
         SharedPreferences prefs = getSharedPreferences(SAVED_PREFERENCES, MODE_PRIVATE);
-        String saved_path = prefs.getString(SAVED_PICTURE_PATH, pictureDirectory + File.separator + "IMG_20151003_162805.jpg");
+        String saved_path = prefs.getString(SAVED_PICTURE_PATH, "default");
         Log.d("FILE_PATH", "Loaded value: " + saved_path);
         return saved_path;
     }
@@ -179,8 +202,12 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 
         String filename = loadLastAttemptedImageCaptureFilename();
 
-        utilities.setPictureToSize(filename, ivLastPic);
-        showExifInfo(filename);
+        if(utilities.setPictureToSize(filename, ivLastPic))
+        {
+            showExifInfo(filename);
+        }
+        else
+            ivLastPic.setImageBitmap(defaultPic);
     }
 
     private File getMyPicDirectory() {
@@ -276,7 +303,7 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
             Log.d("GMAP", "Media Mounted");
             File pictureDir = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_PICTURES);
             pictureDir = new File(pictureDir, "BrickCamera");
-
+            int i = 0;
             if (pictureDir.exists()) {
                 googleMap.clear();
                 Log.d("GMAP", "Folder Found");
@@ -285,15 +312,33 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
                     if (file.getName().endsWith(".jpg")) {
                         Log.d("GMAP", "Found .jpgs");
                         LatLng pos = getLatLongFromExif(file.getAbsolutePath());
-
                         if (pos != null) {
 //                            googleMap.clear();
                             Log.d("GMAP", "Image with gtag: " + file.getName());
+
+                            String fpath = file.getPath();
+                            String fname = utilities.filenameFromPath(file.getPath());
+                            String orientation = utilities.getExifInfo(file.getPath()).get(0);
+                            myDB.addPicture(fname, fpath, orientation);
+                            Log.d("File name", "fname: " + fname + " fpath: " + fpath + " orientation: " + orientation);
+//                            String fnameDB = myDB.getAll2().getAsString("Filename");
+//                            String fpathDB = myDB.getAll2().getAsString("Filepath");
+//                            String orDB = myDB.getAll2().getAsString("Orientation");
+                            String fpathDB = myDB.getName(fpath).getAsString("Name");
+//                            Log.d("File name", "fnameDB: " + fnameDB + " fpathDB: " + fpathDB + " orienDB: " + orDB);
+                            Log.d("File name", "fpathDB: " + fpathDB);
+                            i++;
+//                            Log.d("File name: ",myDB.getComment(file.getPath()).getAsString("Comment") + " N: " + i);
                             addGeoTag(pos, file.getName(), googleMap);
                         }
                     }
                 }
             }
         }
+    }
+
+    public void onBtnRefreshClick(View view) {
+        mapFragment.getMap().clear();
+        findImagesWithGeoTagAndAddToGmap(mapFragment.getMap());
     }
 }
