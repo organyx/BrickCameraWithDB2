@@ -155,13 +155,6 @@ public class MainActivity extends AppCompatActivity implements GoogleMap.OnMarke
 //                }
 //            }
         }
-//        else
-//        {
-//            Log.d("onActivityResult", "ELSE");
-//            String lastPic = myDB.getLastRow().getAsString("Filepath");
-//            Log.d("LasPic", lastPic);
-//            utilities.setPictureToSize(lastPic, ivLastPic);
-//        }
     }
 
     private void showExifInfo(String filename) {
