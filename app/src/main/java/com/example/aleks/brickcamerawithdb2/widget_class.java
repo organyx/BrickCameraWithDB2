@@ -122,8 +122,8 @@ public class widget_class extends AppWidgetProvider {
                 remoteViews.setTextViewText(R.id.tvFeed1, "");
                 remoteViews.setTextViewText(R.id.tvFeed2, "");
                 remoteViews.setTextViewText(R.id.tvFeed3, "");
-                remoteViews.setTextViewText(R.id.tvFeed4, "");
-                remoteViews.setTextViewText(R.id.tvFeed5, "");
+//                remoteViews.setTextViewText(R.id.tvFeed4, "");
+//                remoteViews.setTextViewText(R.id.tvFeed5, "");
             }
             else if(feed != null && feed.size() >= 5)
             {
@@ -133,10 +133,10 @@ public class widget_class extends AppWidgetProvider {
                 remoteViews.setOnClickPendingIntent(R.id.tvFeed2, setPendingIntent(feed.get(1).link));
                 remoteViews.setTextViewText(R.id.tvFeed3, "3. " + feed.get(2).title);
                 remoteViews.setOnClickPendingIntent(R.id.tvFeed3, setPendingIntent(feed.get(2).link));
-                remoteViews.setTextViewText(R.id.tvFeed4, "4. " + feed.get(3).title);
-                remoteViews.setOnClickPendingIntent(R.id.tvFeed4, setPendingIntent(feed.get(3).link));
-                remoteViews.setTextViewText(R.id.tvFeed5, "5. " + feed.get(4).title);
-                remoteViews.setOnClickPendingIntent(R.id.tvFeed5, setPendingIntent(feed.get(4).link));
+//                remoteViews.setTextViewText(R.id.tvFeed4, "4. " + feed.get(3).title);
+//                remoteViews.setOnClickPendingIntent(R.id.tvFeed4, setPendingIntent(feed.get(3).link));
+//                remoteViews.setTextViewText(R.id.tvFeed5, "5. " + feed.get(4).title);
+//                remoteViews.setOnClickPendingIntent(R.id.tvFeed5, setPendingIntent(feed.get(4).link));
             }
 
             appWidgetManager.updateAppWidget(new ComponentName(context, widget_class.class), remoteViews);

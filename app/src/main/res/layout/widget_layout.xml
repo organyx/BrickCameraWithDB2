@@ -11,7 +11,7 @@
         android:background="@drawable/borders">
         <TextView
             android:id="@+id/tvFeed1"
-            style="@android:style/TextAppearance.Small"
+            style="@android:style/TextAppearance.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -20,7 +20,7 @@
             android:text="--:--"/>
         <TextView
             android:id="@+id/tvFeed2"
-            style="@android:style/TextAppearance.Small"
+            style="@android:style/TextAppearance.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -29,31 +29,31 @@
             android:text="--:--"/>
         <TextView
             android:id="@+id/tvFeed3"
-            style="@android:style/TextAppearance.Small"
+            style="@android:style/TextAppearance.Medium"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center_vertical|center_horizontal"
             android:layout_margin="4dip"
             android:text="--:--"/>
-        <TextView
-            android:id="@+id/tvFeed4"
-            style="@android:style/TextAppearance.Small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_margin="4dip"
-            android:text="--:--"/>
-        <TextView
-            android:id="@+id/tvFeed5"
-            style="@android:style/TextAppearance.Small"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:gravity="center_vertical|center_horizontal"
-            android:layout_margin="4dip"
-            android:text="--:--"/>
+        <!--<TextView-->
+            <!--android:id="@+id/tvFeed4"-->
+            <!--style="@android:style/TextAppearance.Small"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:gravity="center_vertical|center_horizontal"-->
+            <!--android:layout_margin="4dip"-->
+            <!--android:text="&#45;&#45;:&#45;&#45;"/>-->
+        <!--<TextView-->
+            <!--android:id="@+id/tvFeed5"-->
+            <!--style="@android:style/TextAppearance.Small"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_gravity="center"-->
+            <!--android:gravity="center_vertical|center_horizontal"-->
+            <!--android:layout_margin="4dip"-->
+            <!--android:text="&#45;&#45;:&#45;&#45;"/>-->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,14 +70,22 @@
                 android:id="@+id/btnUpdateFeed"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Update"
-                android:layout_gravity="center"/>
+                android:text="@string/widget_update"
+                android:textColor="@color/white"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:background="@drawable/thin_border"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"/>
             <Button
                 android:id="@+id/btnLaunchApp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Launch"
-                android:layout_gravity="center"/>
+                android:text="@string/widget_launch"
+                android:textColor="@color/white"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:background="@drawable/thin_border"
+                android:layout_gravity="center"
+                android:layout_margin="5dp"/>
         </LinearLayout>
     </LinearLayout>
 </RelativeLayout>
