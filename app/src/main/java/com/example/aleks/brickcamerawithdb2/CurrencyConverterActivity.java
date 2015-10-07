@@ -76,7 +76,7 @@ public class CurrencyConverterActivity extends AppCompatActivity {
                     int original = Integer.parseInt(etValue.getText().toString());
                     double rate = Double.parseDouble(result);
                     double finalResult = original * rate;
-                    tvResult.setText(finalResult + "");
+                    tvResult.setText(String.format("%.2f", finalResult) + " " + etTo.getText().toString());
                 }
             }
         }

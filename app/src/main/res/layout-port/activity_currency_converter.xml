@@ -14,65 +14,85 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_margin="5dp"
             style="@style/Text_Style"
-            android:text="Currency Converter"/>
+            android:text="@string/action_currency_converter"/>
         <TableRow
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content">
+            android:layout_width="fill_parent">
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Text_Style"
-                android:text="Amount"/>
+                android:text="@string/currency_amount"/>
             <EditText
                 android:id="@+id/etServiceAmount"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                style="@style/Text_Style"/>
-        </TableRow>
-        <TableRow
-            android:layout_height="wrap_content"
-            android:layout_width="wrap_content">
-            <TextView
-                android:layout_width="wrap_content"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 style="@style/Text_Style"
-                android:text="From"/>
+                android:inputType="number"
+                />
+        </TableRow>
+        <RelativeLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/title_from"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                style="@style/Text_Style"
+                android:text="@string/currency_from"/>
             <EditText
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@id/title_from"
                 android:id="@+id/etServiceFrom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/Text_Style"
                 android:maxLines="1"
-                android:maxLength="3"/>
-        </TableRow>
-        <TableRow
+                android:maxLength="3"
+                android:inputType="textCapCharacters"
+                />
+        </RelativeLayout>
+        <RelativeLayout
             android:layout_height="wrap_content"
-            android:layout_width="wrap_content">
+            android:layout_width="fill_parent">
             <TextView
-                android:layout_width="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/title_to"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 style="@style/Text_Style"
-                android:text="To"/>
+                android:text="@string/currency_to"/>
             <EditText
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_toRightOf="@id/title_to"
                 android:id="@+id/etServiceTo"
-                android:layout_width="wrap_content"
+                android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 style="@style/Text_Style"
                 android:maxLines="1"
-                android:maxLength="3"/>
-        </TableRow>
+                android:maxLength="3"
+                android:inputType="textCapCharacters"/>
+        </RelativeLayout>
         <TextView
             android:id="@+id/tvServiceResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             style="@style/Text_Style"
-            android:text="--:--"/>
+            android:text="@string/converted_currency"/>
         <Button
             android:id="@+id/btnConvert"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Convert"
+            android:text="@string/btn_convert_title"
             android:onClick="onBtnConvertClick"/>
     </LinearLayout>
 </RelativeLayout>
